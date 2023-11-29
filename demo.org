@@ -76,6 +76,6 @@ For Argo CD login, the password is auto-generated upon installation. In order to
 * Check Out Argo CD Dashboard
 Simply navigate to Argo CD after port-forwarding
 
-#+begin_src bash :dir /tmp/surrealdb-social-demo
+#+begin_src bash :dir /tmp/surrealdb-social-demo :async
   kubectl port-forward -n argocd svc/argocd-server 8080:443
 #+end_src
