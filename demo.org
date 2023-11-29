@@ -61,7 +61,7 @@ Then, install Argo CD related resources
 #+end_src
 
 *** Extra: Update Login Password
-For Argo CD login, the password is auto-generated upon installation. In order to make it easier to interact for this demo, update the admin password. This is NOT something you would do for production, obviously 😉
+For Argo CD login, the password is auto-generated upon installation. In order to make it easier to interact for this demo, update the admin password to ~admin~. This is NOT something you would do for production, obviously 😉
 
 #+begin_src bash
   kubectl patch secret argocd-secret -n argocd \
