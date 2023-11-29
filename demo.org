@@ -1,0 +1,81 @@
+#+title: SurrealDB With GitOps
+#+author: Ryota @rytswd
+
+This is the note used for my presentation at SurrealDB Social November 2023.
+
+While this aims to also provide as the reproducible demo steps, the content here is written mainly for the live demo purposes.
+
+Because this cluster setup uses GitOps, all the cluster defintiions will be managed by the files in the Git repository. You can follow the below steps to get "exactly" the same cluster setup, but if you want to adjust to your likings, you would need to update the GitOps repository to your own repository you have control over.
+
+TODO: The guideline for forking this repository will be added later.
+
+* Cluster Setup
+If you are to create a similar cluster setup, you can follow the below commands.
+
+** 1. Create cluster
+NOTE: This step uses Civo for simplicity
+If you want to run on your local machine, you can use ~kind~ or other local cluster solutions.
+#+begin_src bash :async
+  civo kubernetes create surrealdb-social-demo \
+       --region LON1 \
+       --size "g4s.kube.large" \
+       --nodes 5 \
+       --save \
+       --wait \
+       --yes
+#+end_src
+
+** 2. Create a temporary directory
+#+begin_src bash
+  mkdir /tmp/surrealdb-social-demo
+  cd /tmp/surrealdb-social-demo
+
+  ls -aF /tmp/surrealdb-social-demo
+#+end_src
+
+** 3. Pull the repository
+#+begin_src bash :dir /tmp/surrealdb-social-demo
+  git clone https://github.com/rytswd/surrealdb-social-2023.git
+  cd surrealdb-social-2023
+#+end_src
+
+From here on, the command is assumed to run in the Git repository.
+
+** 4. Apply Argo CD installation and orchestration
+After installing Argo CD, everything will be managed by Argo CD and GitOps based management will be in place. In order to achieve that, though, we need to imperatively configure the cluster with Argo CD resources first.
+
+Firstly, create namespaces:
+#+begin_src bash :dir /tmp/surrealdb-social-demo/surrealdb-social-2023
+  kustomize build ./manifests/other/namespaces |
+    kubectl apply -f -
+#+end_src
+
+Then, install Argo CD related resources
+#+begin_src bash :dir /tmp/surrealdb-social-demo/surrealdb-social-2023 :async
+  kubectl apply -n argocd \
+      -f ./manifests/argocd/installation/argocd-ha-installation.yaml
+  kubectl apply -n argocd \
+      -f ./manifests/argocd/orchestration/argocd-proj-demo.yaml
+  kubectl apply -n argocd \
+      -f ./manifests/argocd/orchestration/argocd-app-argocd.yaml
+#+end_src
+
+*** Extra: Update Login Password
+For Argo CD login, the password is auto-generated upon installation. In order to make it easier to interact for this demo, update the admin password. This is NOT something you would do for production, obviously 😉
+
+#+begin_src bash
+  kubectl patch secret argocd-secret -n argocd \
+          -p \
+          "{\"data\": \
+                      {\
+                      \"admin.password\": \"$(echo -n '$2a$10$p9R9u6JBwOVTPa3tpcS68OifxvqIPjCFceiLul2aPwOaIlEJ6fGMi' | base64 -w0)\", \
+                      \"admin.passwordMtime\": \"$(date +%FT%T%Z | base64)\" \
+                      }}"
+#+end_src
+
+* Check Out Argo CD Dashboard
+Simply navigate to Argo CD after port-forwarding
+
+#+begin_src bash :dir /tmp/surrealdb-social-demo
+  kubectl port-forward -n argocd svc/argocd-server 8080:443
+#+end_src
