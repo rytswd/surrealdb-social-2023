@@ -79,3 +79,20 @@ Simply navigate to Argo CD after port-forwarding
 #+begin_src bash :dir /tmp/surrealdb-social-demo :async
   kubectl port-forward -n argocd svc/argocd-server 8080:443
 #+end_src
+
+* Clean Up
+You can simply delete the cluster.
+
+The demo steps here are run with Civo clusters, and that can be easily shut down using Civo CLI.
+#+begin_src bash :async
+  civo kubernetes remove surrealdb-social-demo
+#+end_src
+
+Because Civo clusters can be associated with PVCs, ensure to remove those PVCs as well. This can be done with CLI as well. (It's a bit complicated, and the following example uses Nushell for simplicity.)
+#+begin_src nushell
+  civo volume ls --region LON1 -o json
+    | from json
+    | each {|it| civo volume remove --region LON1 -y ($it.name)}
+#+end_src
+
+Finally, you can also remove the network.
