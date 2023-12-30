@@ -11,11 +11,9 @@
 Official Website:
 https://www.eventbrite.co.uk/e/surrealdb-social-building-a-saas-deploying-surrealdb-to-kubernetes-tickets-750714265577
 
-Recording: _To be confirmed_
+Recording: https://www.youtube.com/watch?v=04opYXTt3sc
 
 Slide: https://dub.sh/surrealdb-social-nov-2023-gitops
-
-Follow-up Video: _To be confirmed_
 
 ## 🌄 About This Repository
 
@@ -64,12 +62,12 @@ On top of that, there were several completely supplementary tools used:
 
 ### Clean Up
 
-To be updated
+When using Civo clusters, it is as simple as shutting them from the Civo console, or CLI. You should also remove the associated volumes which were associated with the cluster.
 
 ### Troubleshooting
 
-To be updated
+If you found any misbehaviour with the setup, please feel free to create an issue. While I'm not intending to maintain with the latest details here, I still check activities and may be able to help.
 
 ## 🔎 References
 
-To be updated
+https://civo.com
